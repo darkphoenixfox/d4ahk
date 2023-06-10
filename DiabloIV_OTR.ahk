@@ -155,7 +155,7 @@ Gui Add, Text, x10 y310 w150 h20, Map Opacity:    Invisible
 Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTip, %MapOpacity%
 Gui Add, Text, x285 y310 w150 h20, Solid
 Gui Add, Button, x10 y340 w100 h30 gRunButton, Save (⊞ ⇑ R)
-Gui Add, Button, x120 y340 w100 h30 gKillAll, Hide (⊞ ⇑ H)
+Gui Add, Button, x120 y340 w100 h30 gHideAll, Hide (⊞ ⇑ H)
 Gui Add, Button, x230 y340 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
 Gui Show, , GUI Diablo IV Overlay
@@ -250,7 +250,7 @@ return
 	run, %cmd3% ,,, idLife
 	cmd3 := OTRpath . " --windowTitle=""Diablo IV"" --width=400 --region=3001`,1236`,45`,169  --opacity=255 --chromeOff --screenPosition=TR --position=4716,0 "
 	run, %cmd3% ,,, idMana
-	TrayTip, Diablo IV Overlay, Showing resource overlays, 5, 1
+	TrayTip, Diablo IV Overlay, Showing resource overlays, 2, 1
 return
 return
 
@@ -301,6 +301,29 @@ IniRead, OTRpath, settings.ini, General, OTRpath
 return
 
 #+h::
+HideAll:
+;minimize all the OTR windows
+WinGet, id, list, OnTopReplica,,,
+Loop, %id%
+	{
+		this_id := id%A_Index%
+	
+		WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+		; Gets the current window's state of -1, 0, 1 (MinMax)
+		;MsgBox %this_id% 's state is %current_window_state%
+	
+		If (current_window_state == -1) {
+			WinRestore, ahk_id %this_id%
+			TrayTip, Diablo IV Overlay, Showing all overlays, 2, 1
+		} 
+		Else If (current_window_state != 1) {
+			WinMinimize, ahk_id %this_id%
+			TrayTip, Diablo IV Overlay, Hdiding all overlays, 2, 1
+		}
+	
+	}
+Return
+
 KillAll:
 	if (idSkill1)
 		process, close, %idSkill1%
@@ -329,7 +352,7 @@ KillAll:
 	idMap =
 	idLife =
 	idMana =
-	TrayTip, Diablo IV Overlay, Closing all overlays, 5, 1
+	;TrayTip, Diablo IV Overlay, Closing all overlays, 5, 1
 return
 
 #+q::
