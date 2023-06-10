@@ -154,7 +154,7 @@ Gui, Font, cWhite
 Gui Add, Text, x10 y310 w150 h20, Map Opacity:    Invisible
 Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTip, %MapOpacity%
 Gui Add, Text, x285 y310 w150 h20, Solid
-Gui Add, Button, x10 y340 w100 h30 gRunButton, Save (⊞ ⇑ R)
+Gui Add, Button, x10 y340 w100 h30 gRunButton, Apply (⊞ ⇑ R)
 Gui Add, Button, x120 y340 w100 h30 gHideAll, Hide (⊞ ⇑ H)
 Gui Add, Button, x230 y340 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
@@ -254,52 +254,6 @@ return
 return
 return
 
-SaveChanges: ;save ini file
-Gui, Submit , NoHide
-IniWrite, %BarPosition%, settings.ini, General, BarPosition
-IniWrite, %Skill1%, settings.ini, General, Skill1
-IniWrite, %Skill2%, settings.ini, General, Skill2
-IniWrite, %Skill3%, settings.ini, General, Skill3
-IniWrite, %Skill4%, settings.ini, General, Skill4
-IniWrite, %LeftSkill%, settings.ini, General, LeftSkill
-IniWrite, %RightSkill%, settings.ini, General, RightSkill
-IniWrite, %Map%, settings.ini, General, Map
-IniWrite, %SkillsPosX%, settings.ini, General, SkillsPosX
-IniWrite, %SkillsPosY%, settings.ini, General, SkillsPosY
-IniWrite, %SkillsSizeX%, settings.ini, General, SkillsSizeX
-IniWrite, %SkillsSizeY%, settings.ini, General, SkillsSizeY
-IniWrite, %SkillsOpacity%, settings.ini, General, SkillsOpacity
-IniWrite, %Padding%, settings.ini, General, Padding
-IniWrite, %MapPosX%, settings.ini, General, MapPosX
-IniWrite, %MapPosY%, settings.ini, General, MapPosY
-IniWrite, %MapSizeX%, settings.ini, General, MapSizeX
-IniWrite, %MapOpacity%, settings.ini, General, MapOpacity
-IniWrite, %OTRpath%, settings.ini, General, OTRpath
-TrayTip, Diablo IV Overlay, Settings saved, 5, 1
-return
-
-ReadINI: ;read ini file
-IniRead, BarPosition, settings.ini, General, BarPosition, 1
-IniRead, Skill1, settings.ini, General, Skill1, 1
-IniRead, Skill2, settings.ini, General, Skill2, 1
-IniRead, Skill3, settings.ini, General, Skill3, 1
-IniRead, Skill4, settings.ini, General, Skill4, 1
-IniRead, LeftSkill, settings.ini, General, LeftSkill, 1
-IniRead, RightSkill, settings.ini, General, RightSkill, 1
-IniRead, Map, settings.ini, General, Map, 0
-IniRead, SkillsPosX, settings.ini, General, SkillsPosX, %midX%
-IniRead, SkillsPosY, settings.ini, General, SkillsPosY, %midY%
-IniRead, SkillsSizeX, settings.ini, General, SkillsSizeX, 40
-;IniRead, SkillsSizeY, settings.ini, General, SkillsSizeY
-IniRead, SkillsOpacity, settings.ini, General, SkillsOpacity, 200
-IniRead, Padding, settings.ini, General, Padding, 16
-IniRead, MapPosX, settings.ini, General, MapPosX, 0
-IniRead, MapPosY, settings.ini, General, MapPosY, 0
-IniRead, MapSizeX, settings.ini, General, MapSizeX, 495
-IniRead, MapOpacity, settings.ini, General, MapOpacity, 120
-IniRead, OTRpath, settings.ini, General, OTRpath
-return
-
 #+h::
 HideAll:
 ;minimize all the OTR windows
@@ -360,11 +314,7 @@ ExitScript:
 GuiClose:
 GuiEscape:
 	gosub, KillAll
-	if (idSkill1)
-		process, close, %idSkill1%
-	if (idSkill2)
-		process, close, %idSkill2%
-    ExitApp
+ExitApp
 
 IncreaseSkillsPosX:
     GuiControlGet, SkillsPosX, , SkillsPosX
@@ -460,4 +410,50 @@ DecreaseMapSizeY:
     GuiControlGet, MapSizeY, , MapSizeY
     MapSizeY--
     GuiControl,, MapSizeY, %MapSizeY%
+return
+
+SaveChanges: ;save ini file
+Gui, Submit , NoHide
+IniWrite, %BarPosition%, settings.ini, General, BarPosition
+IniWrite, %Skill1%, settings.ini, General, Skill1
+IniWrite, %Skill2%, settings.ini, General, Skill2
+IniWrite, %Skill3%, settings.ini, General, Skill3
+IniWrite, %Skill4%, settings.ini, General, Skill4
+IniWrite, %LeftSkill%, settings.ini, General, LeftSkill
+IniWrite, %RightSkill%, settings.ini, General, RightSkill
+IniWrite, %Map%, settings.ini, General, Map
+IniWrite, %SkillsPosX%, settings.ini, General, SkillsPosX
+IniWrite, %SkillsPosY%, settings.ini, General, SkillsPosY
+IniWrite, %SkillsSizeX%, settings.ini, General, SkillsSizeX
+IniWrite, %SkillsSizeY%, settings.ini, General, SkillsSizeY
+IniWrite, %SkillsOpacity%, settings.ini, General, SkillsOpacity
+IniWrite, %Padding%, settings.ini, General, Padding
+IniWrite, %MapPosX%, settings.ini, General, MapPosX
+IniWrite, %MapPosY%, settings.ini, General, MapPosY
+IniWrite, %MapSizeX%, settings.ini, General, MapSizeX
+IniWrite, %MapOpacity%, settings.ini, General, MapOpacity
+IniWrite, %OTRpath%, settings.ini, General, OTRpath
+TrayTip, Diablo IV Overlay, Settings saved, 5, 1
+return
+
+ReadINI: ;read ini file
+IniRead, BarPosition, settings.ini, General, BarPosition, 1
+IniRead, Skill1, settings.ini, General, Skill1, 1
+IniRead, Skill2, settings.ini, General, Skill2, 1
+IniRead, Skill3, settings.ini, General, Skill3, 1
+IniRead, Skill4, settings.ini, General, Skill4, 1
+IniRead, LeftSkill, settings.ini, General, LeftSkill, 1
+IniRead, RightSkill, settings.ini, General, RightSkill, 1
+IniRead, Map, settings.ini, General, Map, 0
+IniRead, SkillsPosX, settings.ini, General, SkillsPosX, %midX%
+IniRead, SkillsPosY, settings.ini, General, SkillsPosY, %midY%
+IniRead, SkillsSizeX, settings.ini, General, SkillsSizeX, 40
+;IniRead, SkillsSizeY, settings.ini, General, SkillsSizeY
+IniRead, SkillsOpacity, settings.ini, General, SkillsOpacity, 200
+IniRead, Padding, settings.ini, General, Padding, 16
+IniRead, MapPosX, settings.ini, General, MapPosX, 0
+IniRead, MapPosY, settings.ini, General, MapPosY, 0
+IniRead, MapSizeX, settings.ini, General, MapSizeX, 495
+IniRead, MapOpacity, settings.ini, General, MapOpacity, 120
+IniRead, OTRpath, settings.ini, General, OTRpath
 return
