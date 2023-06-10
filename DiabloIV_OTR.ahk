@@ -1,4 +1,5 @@
-﻿#NoEnv
+﻿#Persistent
+#NoEnv
 #SingleInstance force
 SetWorkingDir %A_ScriptDir%
 
@@ -33,6 +34,7 @@ if !FileExist(OTRpath)
 			gosub ExitScript
 	}
 }
+
 
 ;Decide where the buttons are based on the screen resolution
 if A_ScreenHeight = 1440
@@ -194,6 +196,8 @@ if (Skill1){
 	thisPos := % pos%order% ;where is this OTR going to be placed
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	sk1PixX := sourceX + 10
+	sk1PixY := barY - 1
 	order++
 }
 if (Skill2){
@@ -241,6 +245,7 @@ if (Map){
 	run, %cmd2% ,,, idMap
 	order++
 }
+WinMinimize, GUI Diablo IV Overlay
 return
 
 #+b:: ;lifebars/manabars on the sides for 32:9
@@ -254,29 +259,7 @@ return
 return
 return
 
-#+h::
-HideAll:
-;minimize all the OTR windows
-WinGet, id, list, OnTopReplica,,,
-Loop, %id%
-	{
-		this_id := id%A_Index%
-	
-		WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-		; Gets the current window's state of -1, 0, 1 (MinMax)
-		;MsgBox %this_id% 's state is %current_window_state%
-	
-		If (current_window_state == -1) {
-			WinRestore, ahk_id %this_id%
-			TrayTip, Diablo IV Overlay, Showing all overlays, 2, 1
-		} 
-		Else If (current_window_state != 1) {
-			WinMinimize, ahk_id %this_id%
-			TrayTip, Diablo IV Overlay, Hdiding all overlays, 2, 1
-		}
-	
-	}
-Return
+
 
 KillAll:
 	if (idSkill1)
@@ -457,3 +440,94 @@ IniRead, MapSizeX, settings.ini, General, MapSizeX, 495
 IniRead, MapOpacity, settings.ini, General, MapOpacity, 120
 IniRead, OTRpath, settings.ini, General, OTRpath
 return
+
+
+;color MUST be in BGR form
+;this function splits the color into its Red, Green, and Blue parts
+SplitBGRColor(BGRColor, ByRef Red, ByRef Green, ByRef Blue)
+{
+    Red := BGRColor & 0xFF
+    Green := BGRColor >> 8 & 0xFF
+    Blue := BGRColor >> 16 & 0xFF
+}
+
+#+h::
+HideAll:
+;minimize all the OTR windows
+WinGet, id, list, OnTopReplica,,,
+Loop, %id%
+	{
+		this_id := id%A_Index%
+	
+		WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+		; Gets the current window's state of -1, 0, 1 (MinMax)
+		;MsgBox %this_id% 's state is %current_window_state%
+	
+		If (current_window_state == -1) {
+			WinRestore, ahk_id %this_id%
+			TrayTip, Diablo IV Overlay, Showing all overlays, 2, 1
+		} 
+		Else If (current_window_state != 1) {
+			WinMinimize, ahk_id %this_id%
+			TrayTip, Diablo IV Overlay, Hdiding all overlays, 2, 1
+		}
+	
+	}
+Return
+
+Skill1check:
+if 	(sk1PixX)
+	{
+		CoordMode, Pizel, Screen
+		PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
+		SplitBGRColor(sk1PixBGR, Red, Green, Blue)
+		if (Red > 10) or (Green > 10) or (Blue > 10)
+			WinShow, OnTopReplica
+		else
+			WinHide, OnTopReplica
+		
+	}
+Return
+
+HideInactive:
+if 	(sk1PixX) 
+{
+	CoordMode, Pizel, Screen
+	PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
+	SplitBGRColor(sk1PixBGR, Red, Green, Blue)
+	WinGet, id, list, OnTopReplica,,,
+	if (Red > 65) or (Green > 65) or (Blue > 65) 
+	{
+		if shown = 0
+			{
+			Loop, %id%
+				{
+					this_id := id%A_Index%
+				
+					WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+					If (current_window_state == -1) {
+						WinRestore, ahk_id %this_id%
+					}
+				}
+			shown = 1
+			WinActivate, Diablo IV
+			}
+	}
+	Else 
+	{
+		if shown = 1
+		{
+			Loop, %id%
+				{
+					this_id := id%A_Index%
+				
+					WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+					If (current_window_state != 1) {
+						WinMinimize, ahk_id %this_id%
+					}
+				}
+			shown = 0
+		}	
+	}
+}
+Return
