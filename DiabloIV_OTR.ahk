@@ -523,7 +523,7 @@ HideInactive: ;This runs on a timer to check if skills are active or not and hid
 if (stopHide = 0) and (HideIn)
 {
 
-	CoordMode, Pizel, Screen
+	CoordMode, Pixel, Screen
 	if (Skill1ID)
 		{
 			WinGetPos Skill1OTRX, Skill1OTRY, , , ahk_pid %Skill1ID% ; get the position of the Skill1 Overlay
@@ -588,7 +588,7 @@ if (stopHide = 0) and (HideIn)
 }
 Return
 
-*pause:: ; hotkey to hide all overlays (for cinematics)
+*insert:: ; hotkey to hide all overlays (for cinematics)
 SetTimer, HideInactive, Off
 WinGet, id, list, OnTopReplica,,,
 Loop, %id%
