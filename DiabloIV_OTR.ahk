@@ -25,6 +25,7 @@ MinSaturation = 255
 cooldownSaturation = 158
 inactiveSaturation = 137
 offscreen = 9000
+paused = 0
 gosub ReadINI
 
 ;Check if OTR can be found, if not ask for the path, if not ask to download
@@ -520,9 +521,8 @@ Return
 
 
 HideInactive: ;This runs on a timer to check if skills are active or not and hide them accordingly
-if (stopHide = 0) and (HideIn)
+if (stopHide = 0) and (HideIn) and (paused = 0)
 {
-
 	CoordMode, Pixel, Screen
 	if (Skill1ID)
 		{
@@ -588,20 +588,78 @@ if (stopHide = 0) and (HideIn)
 }
 Return
 
-*insert:: ; hotkey to hide all overlays (for cinematics)
-SetTimer, HideInactive, Off
-WinGet, id, list, OnTopReplica,,,
-Loop, %id%
-	{
-		this_id := id%A_Index%
-		WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-		WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-		If (thisSkillX < 9000 ) {
-			WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
+insert:: ; hotkey to hide all overlays (for cinematics)
+CoordMode, Pixel, Screen
+if (paused = 0)
+{
+	msgbox, paused false
+	paused = 1
+	if (Skill1ID) and (Skill1OTRX < offscreen)
+		{
+		WinGetPos Skill1OTRX, Skill1OTRY, , , ahk_pid %Skill1ID% ; get the position of the Skill1 Overlay
+		WinMove, ahk_pid %Skill1ID%, , Skill1OTRX + 10000, Skill1OTRY
 		}
+	if (Skill2ID)
+		{
+			WinGetPos Skill2OTRX, Skill2OTRY, , , ahk_pid %Skill2ID%
+			WinMove, ahk_pid %Skill2ID%, , Skill2OTRX + 10000, Skill2OTRY
+		}
+	if (Skill3ID)
+		{
+			WinGetPos Skill3OTRX, Skill3OTRY, , , ahk_pid %Skill3ID%
+			WinMove, ahk_pid %Skill3ID%, , Skill3OTRX + 10000, Skill3OTRY
+		}
+	if (Skill4ID)
+		{
+			WinGetPos Skill4OTRX, Skill4OTRY, , , ahk_pid %Skill4ID%
+			WinMove, ahk_pid %Skill4ID%, , Skill4OTRX + 10000, Skill4OTRY
+		}
+	if (LeftSkillID)
+		{
+			WinGetPos LeftSkillOTRX, LeftSkillOTRY, , , ahk_pid %LeftSkillID%
+			WinMove, ahk_pid %LeftSkillID%, , LeftSkillOTRX + 10000, LeftSkillOTRY
+		}
+	if (RightSkillID)
+		{
+			WinGetPos RightSkillOTRX, RightSkillOTRY, , , ahk_pid %RightSkillID%
+			WinMove, ahk_pid %RightSkillID%, , RightSkillOTRX + 10000, RightSkillOTRY
+		}
+}
+else
+{
+	msgbox, paused was true, moving back
+	if (Skill1ID) and (Skill1OTRX < offscreen)
+		{
+			WinGetPos Skill1OTRX, Skill1OTRY, , , ahk_pid %Skill1ID% ; get the position of the Skill1 Overlay
+			WinMove, ahk_pid %Skill1ID%, , Skill1OTRX - 10000, Skill1OTRY
+		}
+	if (Skill2ID)
+		{
+			WinGetPos Skill2OTRX, Skill2OTRY, , , ahk_pid %Skill2ID%
+			WinMove, ahk_pid %Skill2ID%, , Skill2OTRX - 10000, Skill2OTRY
+		}
+	if (Skill3ID)
+		{
+			WinGetPos Skill3OTRX, Skill3OTRY, , , ahk_pid %Skill3ID%
+			WinMove, ahk_pid %Skill3ID%, , Skill3OTRX - 10000, Skill3OTRY
+		}
+	if (Skill4ID)
+		{
+			WinGetPos Skill4OTRX, Skill4OTRY, , , ahk_pid %Skill4ID%
+			WinMove, ahk_pid %Skill4ID%, , Skill4OTRX - 10000, Skill4OTRY
+		}
+	if (LeftSkillID)
+		{
+			WinGetPos LeftSkillOTRX, LeftSkillOTRY, , , ahk_pid %LeftSkillID%
+			WinMove, ahk_pid %LeftSkillID%, , LeftSkillOTRX - 10000, LeftSkillOTRY
+		}
+	if (RightSkillID)
+		{
+			WinGetPos RightSkillOTRX, RightSkillOTRY, , , ahk_pid %RightSkillID%
+			WinMove, ahk_pid %RightSkillID%, , RightSkillOTRX - 10000, RightSkillOTRY
+		}
+		paused = 0
 	}
-Pause,, 1 ;Pause Script off/on
-SetTimer, HideInactive, On
 Return
 
 ;color MUST be in BGR form
