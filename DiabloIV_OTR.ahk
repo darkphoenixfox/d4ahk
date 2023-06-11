@@ -166,9 +166,9 @@ Gui Add, Text, x10 y310 w150 h20, Map Opacity:    Invisible
 Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTip, %MapOpacity%
 Gui Add, Text, x285 y310 w150 h20, Solid
 Gui Add, Text, x10 y340 w150 h20, Hide when inactive:
-Gui Add, Checkbox, x110 y340 w70 h20 vHideIn Checked%HideIn%
+Gui Add, Checkbox, x110 y340 w50 h20 vHideIn Checked%HideIn%
 Gui Add, Text, x170 y340 w150 h20, Hide when in cooldown:
-Gui Add, Checkbox, x290 y340 w70 h20 vHideCD Checked%HideCD%
+Gui Add, Checkbox, x290 y340 w50 h20 vHideCD Checked%HideCD%
 Gui, Font, bold
 Gui, Add, Text, x10 y370 w500 h20, Press ⊞ ⇑ B for Life/Mana bars (32:9 only) 
 Gui, Add, Text, x10 y400 w500 h20, Press [Pause] to Hide/Show all overlays (for cinematics)
