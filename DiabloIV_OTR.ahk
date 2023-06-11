@@ -156,13 +156,16 @@ Gui Add, Button, x160 y280 w20 h20 gIncreaseMapSizeX, +
 Gui Add, Button, x180 y280 w20 h20 gDecreaseMapSizeX, -
 Gui, Font, cWhite
 Gui Add, Text, x10 y310 w150 h20, Map Opacity:    Invisible
-Gui Add, Text, x10 y340 w150 h20, Hide when inactive:
-Gui Add, Checkbox, x110 y340 w70 h20 vHideIn Checked%HideIn%
 Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTip, %MapOpacity%
 Gui Add, Text, x285 y310 w150 h20, Solid
-Gui Add, Button, x10 y390 w100 h30 gRunButton, Apply (⊞ ⇑ R)
-Gui Add, Button, x120 y390 w100 h30 gHideAll, Hide (⊞ ⇑ H)
-Gui Add, Button, x230 y390 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
+Gui Add, Text, x10 y340 w150 h20, Hide when inactive:
+Gui Add, Checkbox, x110 y340 w70 h20 vHideIn Checked%HideIn%
+Gui, Font, bold
+Gui, Add, Text, x10 y370 w500 h20, Press ⊞ ⇑ B for Life/Mana bars (32:9 only) 
+Gui, Add, Text, x10 y400 w500 h20, Press [Pause] to Hide/Show all overlays (for cinematics)
+Gui Add, Button, x10 y430 w100 h30 gRunButton, Apply (⊞ ⇑ R)
+Gui Add, Button, x120 y430 w100 h30 gHideAll, Hide (⊞ ⇑ H)
+Gui Add, Button, x230 y430 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
 Gui Show, , GUI Diablo IV Overlay
 
@@ -171,7 +174,7 @@ return
 ;Draw the GUI--------------------------------------------------------------------------------------------------------------------------
 
 
-#+r::
+#+r:: ;Create overlays
 RunButton:
 Gui, Submit, NoHide
 stopHide = 1
@@ -489,7 +492,7 @@ Loop, %id%
 	}
 Return
 
-HideInactive:
+HideInactive: ;This runs on a timer to check if skills are active or not and hide them accordingly
 if (stopHide = 0)
 {
 if (HideIn)
@@ -533,7 +536,7 @@ if (HideIn)
 }
 Return
 
-*pause::
+*pause:: ; hotkey to hide all overlays (for cinematics)
 SetTimer, HideInactive, Off
 WinGet, id, list, OnTopReplica,,,
 Loop, %id%
