@@ -18,6 +18,13 @@ midY := (A_ScreenHeight // 2) ;Screen mid height
 offset = 0
 stopHide = 0
 disabled = false
+MaxLuminosity = 0
+MaxSaturation = 0
+MinLuminosity = 255
+MinSaturation = 255
+cooldownSaturation = 158
+inactiveSaturation = 137
+offscreen = 9000
 gosub ReadINI
 
 ;Check if OTR can be found, if not ask for the path, if not ask to download
@@ -43,7 +50,7 @@ if A_ScreenHeight = 1440
 {
 	sourceWidth = 73 ;width of each skill button
 	sourcePadding = 11 ;padding between skills
-	barY = 1305 ;top Y coordinate of skill buttons
+	barY = 1304 ;top Y coordinate of skill buttons
 	barX := midX ;skill bar Center
 	mapWidth = 495 ;Map width, this is wider than the actual map as the zone names can be wider than the map itself
 	mapHeight = 360
@@ -123,7 +130,7 @@ Gui Add, Button, x270 y100 w20 h20 gDecreaseSkillsPosY, -
 Gui, Font, cWhite
 Gui Add, Text, x10 y130 w100 h20, Skills Size:
 Gui, Font, cBlack
-Gui Add, Edit, x110 y130 w50 h20 vSkillsSizeX, 40
+Gui Add, Edit, x110 y130 w50 h20 vSkillsSizeX, %SkillsSizeX%
 Gui Add, Button, x160 y130 w20 h20 gIncreaseSkillsSizeX, +
 Gui Add, Button, x180 y130 w20 h20 gDecreaseSkillsSizeX, -
 ;Gui Add, Edit, x200 y130 w50 h20 vSkillsSizeY,
@@ -160,6 +167,8 @@ Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTi
 Gui Add, Text, x285 y310 w150 h20, Solid
 Gui Add, Text, x10 y340 w150 h20, Hide when inactive:
 Gui Add, Checkbox, x110 y340 w70 h20 vHideIn Checked%HideIn%
+Gui Add, Text, x170 y340 w150 h20, Hide when in cooldown:
+Gui Add, Checkbox, x290 y340 w70 h20 vHideCD Checked%HideCD%
 Gui, Font, bold
 Gui, Add, Text, x10 y370 w500 h20, Press ⊞ ⇑ B for Life/Mana bars (32:9 only) 
 Gui, Add, Text, x10 y400 w500 h20, Press [Pause] to Hide/Show all overlays (for cinematics)
@@ -169,7 +178,7 @@ Gui Add, Button, x230 y430 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
 Gui Show, , GUI Diablo IV Overlay
 
-SetTimer, HideInactive, 250
+
 return
 ;Draw the GUI--------------------------------------------------------------------------------------------------------------------------
 
@@ -208,7 +217,10 @@ if (Skill1){
 	sourceX := floor(barX + (skillN * sourceWidth ) + ((skillN + 0.5) * sourcePadding)) - offset
 	thisPos := % pos%order% ;where is this OTR going to be placed
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
-	run, %cmd1% ,,, idSkill%order%	
+	run, %cmd1% ,,, idSkill%order%
+	Skill1ID := idSkill%order%
+	Skill1X := sourceX + 5
+	Skill1Y := barY + 1
 	order++
 }
 if (Skill2){
@@ -217,6 +229,9 @@ if (Skill2){
 	thisPos := % pos%order%
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	Skill2ID := idSkill%order%
+	Skill2X := sourceX + 5
+	Skill2Y := barY + 1
 	order++
 }
 if (Skill3){
@@ -225,6 +240,9 @@ if (Skill3){
 	thisPos := % pos%order%
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	Skill3ID := idSkill%order%
+	Skill3X := sourceX + 5
+	Skill3Y := barY + 1
 	order++
 }
 if (Skill4){
@@ -233,6 +251,9 @@ if (Skill4){
 	thisPos := % pos%order%
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	Skill4ID := idSkill%order%
+	Skill4X := sourceX + 5
+	Skill4Y := barY + 1
 	order++
 }
 if (LeftSkill){
@@ -241,6 +262,9 @@ if (LeftSkill){
 	thisPos := % pos%order%
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	LeftSkillID := idSkill%order%
+	LeftSkillX := sourceX + 5
+	LeftSkillY := barY + 1
 	order++
 }
 if (RightSkill){
@@ -249,6 +273,9 @@ if (RightSkill){
 	thisPos := % pos%order%
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
 	run, %cmd1% ,,, idSkill%order%
+	RightSkillID := idSkill%order%
+	RightSkillX := sourceX + 5
+	RightSkillY := barY + 1
 	order++
 }
 if (Map){
@@ -259,6 +286,9 @@ if (Map){
 WinMinimize, GUI Diablo IV Overlay
 sleep 500
 stopHide = 0
+if HideIn
+	SetTimer, HideInactive, 250
+
 return
 
 #+b:: ;lifebars/manabars on the sides for 32:9
@@ -432,6 +462,7 @@ IniWrite, %MapSizeX%, settings.ini, General, MapSizeX
 IniWrite, %MapOpacity%, settings.ini, General, MapOpacity
 IniWrite, %OTRpath%, settings.ini, General, OTRpath
 IniWrite, %HideIn%, settings.ini, General, HideIn
+IniWrite, %HideCD%, settings.ini, General, HideCD
 TrayTip, Diablo IV Overlay, Settings saved, 5, 1
 return
 
@@ -456,17 +487,11 @@ IniRead, MapSizeX, settings.ini, General, MapSizeX, 495
 IniRead, MapOpacity, settings.ini, General, MapOpacity, 120
 IniRead, OTRpath, settings.ini, General, OTRpath
 IniRead, HideIn, settings.ini, General, HideIn, 1
+IniRead, HideCD, settings.ini, General, HideCD, 1
 return
 
 
-;color MUST be in BGR form
-;this function splits the color into its Red, Green, and Blue parts
-SplitBGRColor(BGRColor, ByRef Red, ByRef Green, ByRef Blue)
-{
-    Red := BGRColor & 0xFF
-    Green := BGRColor >> 8 & 0xFF
-    Blue := BGRColor >> 16 & 0xFF
-}
+
 
 #+h::
 HideAll:
@@ -492,7 +517,78 @@ Loop, %id%
 	}
 Return
 
+
+
 HideInactive: ;This runs on a timer to check if skills are active or not and hide them accordingly
+if (stopHide = 0) and (HideIn)
+{
+
+	CoordMode, Pizel, Screen
+	if (Skill1ID)
+		{
+			WinGetPos Skill1OTRX, Skill1OTRY, , , ahk_pid %Skill1ID% ; get the position of the Skill1 Overlay
+			PixelGetColor, Skill1BGR, %Skill1X%, %Skill1Y% ;get the color of the pixel where the 1st skill (not the overlay) is in the bar
+			SplitBGR2HSL(Skill1BGR, Hue1, Saturation1, Luminosity1) ; convert BGR to HSL
+			;ToolTip, %Skill1X% - %Skill1Y% -  %Hue1% %Saturation1% %Luminosity1%, 200, 200, 1
+			if (Saturation1 > cooldownSaturation) and (Skill1OTRX > offscreen) ; If that pixel saturation above the saturation of the CD saturation and the overlay is offscreen
+				WinMove, ahk_pid %Skill1ID%, , Skill1OTRX - 10000, Skill1OTRY ; move it back to the screen
+			if ((HideCD and (Saturation1 < cooldownSaturation)) or (Saturation1 < inactiveSaturation)) and (Skill1OTRX < offscreen) ; if Hide on cooldown is checked and the sat. is less than the CD or inactive sat., and it's offscreem
+				WinMove, ahk_pid %Skill1ID%, , Skill1OTRX + 10000, Skill1OTRY
+		}
+	if (Skill2ID)
+		{
+			WinGetPos Skill2OTRX, Skill2OTRY, , , ahk_pid %Skill2ID%
+			PixelGetColor, Skill2BGR, %Skill2X%, %Skill2Y% ;get the color of the pixel where the 1st skill is in the bar
+			SplitBGR2HSL(Skill2BGR, Hue2, Saturation2, Luminosity2)
+			if (Saturation2 > cooldownSaturation) and (Skill2OTRX > offscreen)
+				WinMove, ahk_pid %Skill2ID%, , Skill2OTRX - 10000, Skill2OTRY
+			if ((HideCD and (Saturation2 < cooldownSaturation)) or (Saturation2 < inactiveSaturation)) and (Skill2OTRX < offscreen)
+				WinMove, ahk_pid %Skill2ID%, , Skill2OTRX + 10000, Skill2OTRY
+		}
+	if (Skill3ID)
+		{
+			WinGetPos Skill3OTRX, Skill3OTRY, , , ahk_pid %Skill3ID%
+			PixelGetColor, Skill3BGR, %Skill3X%, %Skill3Y% ;get the color of the pixel where the 1st skill is in the bar
+			SplitBGR2HSL(Skill3BGR, Hue3, Saturation3, Luminosity3)
+			if (Saturation3 > cooldownSaturation) and (Skill3OTRX > offscreen)
+				WinMove, ahk_pid %Skill3ID%, , Skill3OTRX - 10000, Skill3OTRY
+			if ((HideCD and (Saturation3 < cooldownSaturation)) or (Saturation3 < inactiveSaturation)) and (Skill3OTRX < offscreen)
+				WinMove, ahk_pid %Skill3ID%, , Skill3OTRX + 10000, Skill3OTRY
+		}
+	if (Skill4ID)
+		{
+			WinGetPos Skill4OTRX, Skill4OTRY, , , ahk_pid %Skill4ID%
+			PixelGetColor, Skill4BGR, %Skill4X%, %Skill4Y% ;get the color of the pixel where the 1st skill is in the bar
+			SplitBGR2HSL(Skill4BGR, Hue4, Saturation4, Luminosity4)
+			if (Saturation4 > cooldownSaturation) and (Skill4OTRX > offscreen)
+				WinMove, ahk_pid %Skill4ID%, , Skill4OTRX - 10000, Skill4OTRY
+			if ((HideCD and (Saturation4 < cooldownSaturation)) or (Saturation4 < inactiveSaturation)) and (Skill4OTRX < offscreen)
+				WinMove, ahk_pid %Skill4ID%, , Skill4OTRX + 10000, Skill4OTRY
+		}
+	if (LeftSkillID)
+		{
+			WinGetPos LeftSkillOTRX, LeftSkillOTRY, , , ahk_pid %LeftSkillID%
+			PixelGetColor, LeftSkillBGR, %LeftSkillX%, %LeftSkillY% ;get the color of the pixel where the 1st skill is in the bar
+			SplitBGR2HSL(LeftSkillBGR, Hue5, Saturation5, Luminosity5)
+			if (Saturation5 > cooldownSaturation) and (LeftSkillOTRX > offscreen)
+				WinMove, ahk_pid %LeftSkillID%, , LeftSkillOTRX - 10000, LeftSkillOTRY
+			if ((HideCD and (Saturation5 < cooldownSaturation)) or (Saturation5 < inactiveSaturation)) and (LeftSkillOTRX < offscreen)
+				WinMove, ahk_pid %LeftSkillID%, , LeftSkillOTRX + 10000, LeftSkillOTRY
+		}
+	if (RightSkillID)
+		{
+			WinGetPos RightSkillOTRX, RightSkillOTRY, , , ahk_pid %RightSkillID%
+			PixelGetColor, RightSkillBGR, %RightSkillX%, %RightSkillY% ;get the color of the pixel where the 1st skill is in the bar
+			SplitBGR2HSL(RightSkillBGR, Hue6, Saturation6, Luminosity6)
+			if (Saturation6 > cooldownSaturation) and (RightSkillOTRX > offscreen)
+				WinMove, ahk_pid %RightSkillID%, , RightSkillOTRX - 10000, RightSkillOTRY
+			if ((HideCD and (Saturation6 < cooldownSaturation)) or (Saturation6 < inactiveSaturation)) and (RightSkillOTRX < offscreen)
+				WinMove, ahk_pid %RightSkillID%, , RightSkillOTRX + 10000, RightSkillOTRY
+		}
+}
+Return
+
+HideInactive2: ;This runs on a timer to check if skills are active or not and hide them accordingly
 if (stopHide = 0)
 {
 if (HideIn)
@@ -551,3 +647,48 @@ Loop, %id%
 Pause,, 1 ;Pause Script off/on
 SetTimer, HideInactive, On
 Return
+
+;color MUST be in BGR form
+;this function splits the color into its Red, Green, and Blue parts
+SplitBGRColor(BGRColor, ByRef Red, ByRef Green, ByRef Blue)
+{
+    Red := BGRColor & 0xFF
+    Green := BGRColor >> 8 & 0xFF
+    Blue := BGRColor >> 16 & 0xFF
+}
+
+SplitBGR2HSL(BGRColor, ByRef Hue, ByRef Saturation, ByRef Brightness)
+{
+    Blue := BGRColor & 0xFF
+    Green := BGRColor >> 8 & 0xFF
+    Red := BGRColor >> 16 & 0xFF
+
+    Max := Max(Red, Green, Blue)
+    Min := Min(Red, Green, Blue)
+    Delta := Max - Min
+
+    ; Calculate Hue
+    if (Delta = 0)
+        Hue := 0
+    else if (Max = Red)
+        Hue := Mod((Green - Blue) / Delta, 6) * 60
+    else if (Max = Green)
+        Hue := ((Blue - Red) / Delta + 2) * 60
+    else if (Max = Blue)
+        Hue := ((Red - Green) / Delta + 4) * 60
+
+    ; Calculate Saturation
+    if (Max = 0)
+        Saturation := 0
+    else
+        Saturation := Delta / Max * 255
+
+    ; Calculate Brightness
+    Brightness := Max
+
+	Hue := Round(Hue)
+	Saturation := Round(Saturation)
+	Brightness := Round(Brightness)
+    ; Return the HSB values
+    return Hue, Saturation, Brightness
+}
