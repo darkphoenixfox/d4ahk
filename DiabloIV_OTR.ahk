@@ -16,9 +16,7 @@ FileInstall, lilith.png, %picture%, 1
 midX := (A_ScreenWidth // 2) ;Screen mid width
 midY := (A_ScreenHeight // 2) ;Screen mid height
 offset = 0
-RedMin = 255
-BlueMin = 255
-GreenMin = 255
+stopHide = 0
 gosub ReadINI
 
 ;Check if OTR can be found, if not ask for the path, if not ask to download
@@ -157,11 +155,13 @@ Gui Add, Button, x160 y280 w20 h20 gIncreaseMapSizeX, +
 Gui Add, Button, x180 y280 w20 h20 gDecreaseMapSizeX, -
 Gui, Font, cWhite
 Gui Add, Text, x10 y310 w150 h20, Map Opacity:    Invisible
+Gui Add, Text, x10 y340 w150 h20, Hide when inactive:
+Gui Add, Checkbox, x110 y340 w70 h20 vHideIn Checked%HideIn%
 Gui Add, Slider, x130 y310 w150 h20 vMapOpacity Range0-255 TickInterval25 ToolTip, %MapOpacity%
 Gui Add, Text, x285 y310 w150 h20, Solid
-Gui Add, Button, x10 y340 w100 h30 gRunButton, Apply (⊞ ⇑ R)
-Gui Add, Button, x120 y340 w100 h30 gHideAll, Hide (⊞ ⇑ H)
-Gui Add, Button, x230 y340 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
+Gui Add, Button, x10 y390 w100 h30 gRunButton, Apply (⊞ ⇑ R)
+Gui Add, Button, x120 y390 w100 h30 gHideAll, Hide (⊞ ⇑ H)
+Gui Add, Button, x230 y390 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
 Gui Show, , GUI Diablo IV Overlay
 
@@ -173,6 +173,7 @@ return
 #+r::
 RunButton:
 Gui, Submit, NoHide
+stopHide = 1
 gosub, SaveChanges
 gosub, KillAll ;Close all the OTR windows
 ;Check if D4 is running
@@ -252,6 +253,8 @@ if (Map){
 	order++
 }
 WinMinimize, GUI Diablo IV Overlay
+sleep 500
+stopHide = 0
 return
 
 #+b:: ;lifebars/manabars on the sides for 32:9
@@ -424,6 +427,7 @@ IniWrite, %MapPosY%, settings.ini, General, MapPosY
 IniWrite, %MapSizeX%, settings.ini, General, MapSizeX
 IniWrite, %MapOpacity%, settings.ini, General, MapOpacity
 IniWrite, %OTRpath%, settings.ini, General, OTRpath
+IniWrite, %HideIn%, settings.ini, General, HideIn
 TrayTip, Diablo IV Overlay, Settings saved, 5, 1
 return
 
@@ -447,6 +451,7 @@ IniRead, MapPosY, settings.ini, General, MapPosY, 0
 IniRead, MapSizeX, settings.ini, General, MapSizeX, 495
 IniRead, MapOpacity, settings.ini, General, MapOpacity, 120
 IniRead, OTRpath, settings.ini, General, OTRpath
+IniRead, HideIn, settings.ini, General, HideIn, 1
 return
 
 
@@ -483,25 +488,10 @@ Loop, %id%
 	}
 Return
 
-
-
-
-Skill1check:
-if 	(sk1PixX)
-	{
-		CoordMode, Pizel, Screen
-		PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
-		SplitBGRColor(sk1PixBGR, Red, Green, Blue)
-		if (Red > 10) or (Green > 10) or (Blue > 10)
-			WinShow, OnTopReplica
-		else
-			WinHide, OnTopReplica
-		
-	}
-Return
-
 HideInactive:
-if 	(sk1PixX)
+if (stopHide = 0)
+{
+if (HideIn)
 {
 	CoordMode, Pizel, Screen
 	PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
@@ -547,5 +537,6 @@ if 	(sk1PixX)
 				}
 			}
 	}
+}
 }
 Return
