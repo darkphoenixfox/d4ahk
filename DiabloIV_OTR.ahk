@@ -588,50 +588,6 @@ if (stopHide = 0) and (HideIn)
 }
 Return
 
-HideInactive2: ;This runs on a timer to check if skills are active or not and hide them accordingly
-if (stopHide = 0)
-{
-if (HideIn)
-{
-	CoordMode, Pizel, Screen
-	PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
-	SplitBGRColor(sk1PixBGR, Red, Green, Blue)
-	
-	WinGet, id, list, OnTopReplica,,,
-	if ((Red > 65) or (Green > 65) orR (Blue > 65)) or ((Red < 30) and (Green < 30) and (Blue < 30))
-	{
-		Loop, %id%
-			{
-				this_id := id%A_Index%
-				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-				If (thisSkillX > 9000 ) {
-					WinMove, ahk_id %this_id%, , thisSkillX - 10000, thisSkillY
-				}
-			}
-	}
-	Else 
-	{
-		if Red < RedMin
-			RedMin := Red
-		if Blue < BlueMin
-			BlueMin := Blue
-		if Green < GreenMin
-			GreenMin := Green
-		Loop, %id%
-			{
-				this_id := id%A_Index%
-				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-				If (thisSkillX < 9000 ) {
-					WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
-				}
-			}
-	}
-}
-}
-Return
-
 *pause:: ; hotkey to hide all overlays (for cinematics)
 SetTimer, HideInactive, Off
 WinGet, id, list, OnTopReplica,,,
