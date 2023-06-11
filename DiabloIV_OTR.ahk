@@ -592,7 +592,6 @@ insert:: ; hotkey to hide all overlays (for cinematics)
 CoordMode, Pixel, Screen
 if (paused = 0)
 {
-	msgbox, paused false
 	paused = 1
 	if (Skill1ID) and (Skill1OTRX < offscreen)
 		{
@@ -627,7 +626,6 @@ if (paused = 0)
 }
 else
 {
-	msgbox, paused was true, moving back
 	if (Skill1ID) and (Skill1OTRX < offscreen)
 		{
 			WinGetPos Skill1OTRX, Skill1OTRY, , , ahk_pid %Skill1ID% ; get the position of the Skill1 Overlay
