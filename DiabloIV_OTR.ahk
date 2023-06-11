@@ -17,6 +17,7 @@ midX := (A_ScreenWidth // 2) ;Screen mid width
 midY := (A_ScreenHeight // 2) ;Screen mid height
 offset = 0
 stopHide = 0
+disabled = false
 gosub ReadINI
 
 ;Check if OTR can be found, if not ask for the path, if not ask to download
@@ -505,7 +506,7 @@ if (HideIn)
 				this_id := id%A_Index%
 				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
 				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-				If (thisSkillX > 5000 ) {
+				If (thisSkillX > 9000 ) {
 					WinMove, ahk_id %this_id%, , thisSkillX - 10000, thisSkillY
 				}
 			}
@@ -523,20 +524,27 @@ if (HideIn)
 				this_id := id%A_Index%
 				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
 				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-				If (thisSkillX < 5000 ) {
-					WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
-				}
-			}
-		Loop, %id%
-			{
-				this_id := id%A_Index%
-				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
-				If (thisSkillX < 5000 ) {
+				If (thisSkillX < 9000 ) {
 					WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
 				}
 			}
 	}
 }
 }
+Return
+
+*pause::
+SetTimer, HideInactive, Off
+WinGet, id, list, OnTopReplica,,,
+Loop, %id%
+	{
+		this_id := id%A_Index%
+		WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+		WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
+		If (thisSkillX < 9000 ) {
+			WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
+		}
+	}
+Pause,, 1 ;Pause Script off/on
+SetTimer, HideInactive, On
 Return
