@@ -16,6 +16,9 @@ FileInstall, lilith.png, %picture%, 1
 midX := (A_ScreenWidth // 2) ;Screen mid width
 midY := (A_ScreenHeight // 2) ;Screen mid height
 offset = 0
+RedMin = 255
+BlueMin = 255
+GreenMin = 255
 gosub ReadINI
 
 ;Check if OTR can be found, if not ask for the path, if not ask to download
@@ -161,6 +164,8 @@ Gui Add, Button, x120 y340 w100 h30 gHideAll, Hide (⊞ ⇑ H)
 Gui Add, Button, x230 y340 w100 h30 gExitScript, Quit (⊞ ⇑ Q)
 Gui, add, Picture, w266 h239 x345 y110, %picture%
 Gui Show, , GUI Diablo IV Overlay
+
+SetTimer, HideInactive, 250
 return
 ;Draw the GUI--------------------------------------------------------------------------------------------------------------------------
 
@@ -190,14 +195,15 @@ pos4 := pos3 + SkillsSizeX + Padding
 pos5 := pos4 + SkillsSizeX + Padding
 pos6 := pos5 + SkillsSizeX + Padding
 
+sk1PixX := floor(barX + (-3 * sourceWidth ) + ((-3 + 0.5) * sourcePadding)) - offset +10
+sk1PixY := barY - 1
+
 if (Skill1){
 	skillN = -3 ; where is this skill relative to the center of the bar
 	sourceX := floor(barX + (skillN * sourceWidth ) + ((skillN + 0.5) * sourcePadding)) - offset
 	thisPos := % pos%order% ;where is this OTR going to be placed
 	cmd1 := OTRpath . " --windowTitle=""Diablo IV"" --size=" . SkillsSizeX . "`," . SkillsSizeX . " --region=" . sourceX . "`," . barY . "`," . sourceWidth . "`," . sourceWidth . " --position=" . thisPos . "`," . SkillsPosY . " --opacity=" . SkillsOpacity . " --chromeOff"
-	run, %cmd1% ,,, idSkill%order%
-	sk1PixX := sourceX + 10
-	sk1PixY := barY - 1
+	run, %cmd1% ,,, idSkill%order%	
 	order++
 }
 if (Skill2){
@@ -257,7 +263,7 @@ return
 	run, %cmd3% ,,, idMana
 	TrayTip, Diablo IV Overlay, Showing resource overlays, 2, 1
 return
-return
+
 
 
 
@@ -291,6 +297,8 @@ KillAll:
 	idMana =
 	;TrayTip, Diablo IV Overlay, Closing all overlays, 5, 1
 return
+
+
 
 #+q::
 ExitScript:
@@ -475,6 +483,9 @@ Loop, %id%
 	}
 Return
 
+
+
+
 Skill1check:
 if 	(sk1PixX)
 	{
@@ -490,44 +501,51 @@ if 	(sk1PixX)
 Return
 
 HideInactive:
-if 	(sk1PixX) 
+if 	(sk1PixX)
 {
 	CoordMode, Pizel, Screen
 	PixelGetColor, sk1PixBGR, %sk1PixX%, %sk1PixY% ;get the color of the pixel where the 1st skill is
 	SplitBGRColor(sk1PixBGR, Red, Green, Blue)
+	
 	WinGet, id, list, OnTopReplica,,,
-	if (Red > 65) or (Green > 65) or (Blue > 65) 
+	if ((Red > 65) or (Green > 65) orR (Blue > 65)) or ((Red < 30) and (Green < 30) and (Blue < 30))
 	{
-		if shown = 0
+		Loop, %id%
 			{
-			Loop, %id%
-				{
-					this_id := id%A_Index%
-				
-					WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-					If (current_window_state == -1) {
-						WinRestore, ahk_id %this_id%
-					}
+				this_id := id%A_Index%
+				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
+				If (thisSkillX > 5000 ) {
+					WinMove, ahk_id %this_id%, , thisSkillX - 10000, thisSkillY
 				}
-			shown = 1
-			WinActivate, Diablo IV
 			}
 	}
 	Else 
 	{
-		if shown = 1
-		{
-			Loop, %id%
-				{
-					this_id := id%A_Index%
-				
-					WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
-					If (current_window_state != 1) {
-						WinMinimize, ahk_id %this_id%
-					}
+		if Red < RedMin
+			RedMin := Red
+		if Blue < BlueMin
+			BlueMin := Blue
+		if Green < GreenMin
+			GreenMin := Green
+		Loop, %id%
+			{
+				this_id := id%A_Index%
+				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
+				If (thisSkillX < 5000 ) {
+					WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
 				}
-			shown = 0
-		}	
+			}
+		Loop, %id%
+			{
+				this_id := id%A_Index%
+				WinGet, current_window_state, MinMax, ahk_id %this_id%,,,
+				WinGetPos thisSkillX, thisSkillY, , , ahk_id %this_id%
+				If (thisSkillX < 5000 ) {
+					WinMove, ahk_id %this_id%, , thisSkillX + 10000, thisSkillY
+				}
+			}
 	}
 }
 Return
